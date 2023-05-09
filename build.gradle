@@ -59,6 +59,7 @@ task dex(type: Jar, dependsOn: jar){
             if(it.exists()) command += " --classpath $it.path"
         }
 
+        def sdkRoot = System.getenv('ANDROID_SDK_ROOT') ?: System.getenv('ANDROID_HOME')
         command += " --lib ${file("$sdkRoot/platforms/android-$sdkVersion/android.jar")}"
 
         if(OS.isWindows) command = "cmd /c $command"
