@@ -1,0 +1,70 @@
+plugins{
+    id 'com.github.GlennFolker.EntityAnno' version "$entVersion"
+}
+
+sourceSets.main{
+    java.srcDirs = ['src/']
+    resources.srcDirs = ['assets/']
+}
+
+dependencies{
+    annotationProcessor "com.github.GlennFolker.EntityAnno:downgrader:$entVersion"
+
+    compileOnly "com.github.GlennFolker.EntityAnno:entity:$entVersion"
+    kapt "com.github.GlennFolker.EntityAnno:entity:$entVersion"
+
+    compileOnly "com.github.Anuken.MindustryJitpack:core:$mindustryVersion"
+    compileOnly "com.github.Anuken.Arc:arc-core:$arcVersion"
+}
+
+repositories{
+    mavenCentral()
+    maven{url 'https://www.jitpack.io'}
+}
+
+entityAnno{
+    modName = 'ent-testing'
+    revisionDir = file("$rootDir/revisions/")
+    fetchPackage = 'entesting.fetched'
+    genSrcPackage = 'entesting.entities.comp'
+    rootPackage = 'entesting.gen'
+}
+
+sourceCompatibility = 17
+tasks.withType(JavaCompile).configureEach{
+    sourceCompatibility = 17
+    options.release = 8
+
+    options.incremental = true
+    options.encoding = 'UTF-8'
+}
+
+jar{
+    archiveFileName = 'EntestingDesktop.jar'
+
+    from files(sourceSets.main.output.classesDirs)
+    from files(sourceSets.main.output.resourcesDir)
+    from configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
+}
+
+task dex(type: Jar, dependsOn: jar){
+    archiveFileName = "Entesting.jar"
+
+    final def desktopJar = jar.archiveFile.get().asFile
+    final def dexJar = file("$dex.temporaryDir/Dexed.jar")
+    doFirst{
+        def command = "d8 --min-api $sdkAPI --output $dexJar $desktopJar"
+
+        (configurations.compileClasspath.asList() + configurations.runtimeClasspath.asList()).forEach{
+            if(it.exists()) command += " --classpath $it.path"
+        }
+
+        command += " --lib ${file("$sdkRoot/platforms/android-$sdkVersion/android.jar")}"
+
+        if(OS.isWindows) command = "cmd /c $command"
+        command.execute(null, file("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
+    }
+
+    from zipTree(desktopJar)
+    from zipTree(dexJar)
+}

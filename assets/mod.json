@@ -1,0 +1,10 @@
+{
+    "name": "ent-testing",
+    "displayName": "EntityAnno Test Site",
+    "description": "Test mod for GlennFolker/EntityAnno project.",
+    "author": "GlennFolker",
+    "version": 1.0,
+    "minGameVersion": 143.1,
+    "java": true,
+    "main": "entesting.Entesting",
+}
