@@ -62,7 +62,7 @@ task dex(type: Jar, dependsOn: jar){
         def sdkRoot = System.getenv('ANDROID_SDK_ROOT') ?: System.getenv('ANDROID_HOME')
         command += " --lib ${file("$sdkRoot/platforms/android-$sdkVersion/android.jar")}"
 
-        if(OS.isWindows) command = "cmd /c $command"
+        if(System.getProperty('os.name').contains('Windows')) command = "cmd /c $command"
         command.execute(null, file("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
     }
 
