@@ -1,35 +1,50 @@
 plugins{
+    // Apply the entity generation plugin.
     id 'com.github.GlennFolker.EntityAnno' version "$entVersion"
 }
 
 sourceSets.main{
+    // Main source directory.
     java.srcDirs = ['src/']
+    // Main assets directory - mod resource files (sprites, sounds, music) go here.
     resources.srcDirs = ['assets/']
 }
 
 dependencies{
+    // Downgrade Java 9+ syntax into being available in Java 8.
     annotationProcessor "com.github.GlennFolker.EntityAnno:downgrader:$entVersion"
 
+    // Use the entity generation annotation processor.
     compileOnly "com.github.GlennFolker.EntityAnno:entity:$entVersion"
     kapt "com.github.GlennFolker.EntityAnno:entity:$entVersion"
 
+    // Depend on Mindustry/Arc classpaths.
     compileOnly "com.github.Anuken.MindustryJitpack:core:$mindustryVersion"
     compileOnly "com.github.Anuken.Arc:arc-core:$arcVersion"
 }
 
 repositories{
+    // Necessary Maven repositories to pull the dependencies.
     mavenCentral()
     maven{url 'https://www.jitpack.io'}
 }
 
 entityAnno{
+    // Mod internal name, corresponds to the "name" field in `mod.json`.
     modName = 'ent-testing'
+    // [Optional] Mindustry version entity component source version override. Defaults to what EntityAnno uses as classpath.
+    mindustryVersion = project['mindustryVersion']
+    // Directory to store entity IO revisions.
     revisionDir = file("$rootDir/revisions/")
+    // Package name for fetched vanilla entity components.
     fetchPackage = 'entesting.fetched'
+    // Modded entity component source files package; these will be excluded from the JAR.
     genSrcPackage = 'entesting.entities.comp'
+    // Root generated entity classes package.
     rootPackage = 'entesting.gen'
 }
 
+// Use Java 17 syntax, but target Java 8 bytecode version.
 sourceCompatibility = 17
 tasks.withType(JavaCompile).configureEach{
     sourceCompatibility = 17
