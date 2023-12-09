@@ -19,7 +19,7 @@ dependencies{
     kapt "com.github.GlennFolker.EntityAnno:entity:$entVersion"
 
     // Depend on Mindustry/Arc classpaths.
-    compileOnly "com.github.Anuken.MindustryJitpack:core:$mindustryVersion"
+    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
     compileOnly "com.github.Anuken.Arc:arc-core:$arcVersion"
 }
 
@@ -27,6 +27,8 @@ repositories{
     // Necessary Maven repositories to pull the dependencies.
     mavenCentral()
     maven{url 'https://www.jitpack.io'}
+    maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
+    mavenLocal()
 }
 
 entityAnno{
@@ -41,11 +43,10 @@ entityAnno{
     // Modded entity component source files package; these will be excluded from the JAR.
     genSrcPackage = 'entesting.entities.comp'
     // Root generated entity classes package.
-    rootPackage = 'entesting.gen'
+    genPackage = 'entesting.gen.entities'
 }
 
 // Use Java 17 syntax, but target Java 8 bytecode version.
-sourceCompatibility = 17
 tasks.withType(JavaCompile).configureEach{
     sourceCompatibility = 17
     options.release = 8
